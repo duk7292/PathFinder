@@ -1,0 +1,10 @@
+-setting up the windows and the canvas 
+-making the point class to safe any point and its coordinates and make it drawable
+-make a List from the points with the user input points amount and spread 
+-draw the List 
+
+- start with the brute Force
+- gehe durch jede möglichkeit an punkten durch und messe die länge des weges wenn es die kürzeste ist speichere sie
+
+gedanken:
+-der brute force algorithmus hat den vorteil das er einfach zu erstellen ist jedoch hat er große schwächen sobald die zahl der punkte höher wird jedoch ist sein vorteil das man bei dem ergebniss sich sicher sein kann das der weg der best mögliche ist mein nächster versuch besteht darin mir ein besitpiel an dem schleimpilz zu nehmen 

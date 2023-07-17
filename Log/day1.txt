@@ -1,3 +1,0 @@
--setting up the windows and the canvas 
--making the point class to safe any point and its coordinates and make it drawable
--make a List from the points with the user input points amount and spread 
