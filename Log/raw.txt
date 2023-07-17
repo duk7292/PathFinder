@@ -1,0 +1,9 @@
+-setting up the windows and the canvas 
+-making the point class to safe any point and its coordinates and make it drawable
+-make a List from the points with the user input points amount and spread 
+-draw the List 
+
+- start with the brute Force
+- gehe durch jede möglichkeit an punkten durch und messe die länge des weges wenn es die kürzeste ist speichere sie
+
+-das war der schwächste aller möglichen algorit
