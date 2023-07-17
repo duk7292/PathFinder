@@ -54,7 +54,16 @@ class Point:
             distance = math.sqrt(distanceX**2 + distanceY**2)
             weight = (MAX_DISTANCE - distance) / MAX_DISTANCE * 1000
             self.weightList.append([point,weight ])
-
+    def getWeights(self):
+        return self.weightList
+class Agent:
+    def __init__(self,startPoint) -> None:
+        self.curPoint = startPoint
+        self.path = [startPoint]
+        self.pathLength = 0
+    def move(self):
+        weights = self.curPoint.getWeights()
+        print()
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
 
 #fill the point list randomly with the parameters spread and pointsAmount
