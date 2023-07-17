@@ -7,4 +7,28 @@
 - gehe durch jede möglichkeit an punkten durch und messe die länge des weges wenn es die kürzeste ist speichere sie
 
 gedanken:
--der brute force algorithmus hat den vorteil das er einfach zu erstellen ist jedoch hat er große schwächen sobald die zahl der punkte höher wird jedoch ist sein vorteil das man bei dem ergebniss sich sicher sein kann das der weg der best mögliche ist mein nächster versuch besteht darin mir ein besitpiel an dem schleimpilz zu nehmen 
+-der brute force algorithmus hat den vorteil das er einfach zu erstellen ist jedoch hat er große schwächen sobald die zahl der punkte höher wird jedoch ist sein vorteil das man bei dem ergebniss sich sicher sein kann das der weg der best mögliche ist mein nächster versuch besteht darin mir ein besitpiel an den Ameisen zu nehmen 
+
+Ameisen Ansatz:
+Die idee kamm mir weil Ameisen bekannt für ihre feromone sind und ich glaube das 
+man das auch hierauf anwenden kann
+
+mein erster gedanke besteht darin mehere Ameisen vom Startpunkt loszuschicken jede Ameise geht an einen zufälligen punkt wobei um so näher ein punkt ist desto warscheinlicher ist es das die Ameise dahin geht 
+das ziel der Ameise besteht darin jeden punkt zu besuchen und am startpunkt wieder zurückzukommen die um so kürzer der weg der Ameise war desto stärker ihre Feromonspur dann kommt eine neue generation die Feromonspur hat dann ein einfluss auf die wahrscheinlichkeit einer verbindung 
+
+nach etwas überlegung habe ich mir jetzt einen ersten Plan für das Programm ausgedacht:
+
+ich erstelle eine neue Klasse Agent welche eine Ameise Darstellen soll diese hat folgende eigenschaften die Klasse speichert
+auf welchem Punkt sie sich momentan befindet und auf welchen punkten sie bereits war in der reinfolge in der sie auf den punkten war
+daduch mekre ich mir direkt den weg den sie gegangen ist
+dann hat sie eine move funktion diese nimmt die gewichte des points und entscheidet zufällig auf welchen sie geht
+
+die gewichte sind im punkt gespeichert jeder punkt merkt sich das gewicht zu alen anderen punkten falls das zu rechen aufwedig 
+ist muss ich dabei später eine optimierung finden aber fürs erste lasse ich das
+die gewichte starten mit werten von 0 - 1000 wobei 1000 hieße das der nächste punkt auf dem jetzigem ist
+und 0 würde heißen das dieser weit weg wäre dabei rechne ich einfach maximal mögliche etfernung zweier punkte minus die entfernung plus 1 um den wert 0 zu verhindern diesen wert projeziere ich dann zu 0 -1000 dann  nach jeder 
+Generation werden die Gewichte erhöht und zwar jenachdem wie kurz der insgesamte weg der agenten war die siese verbindung nahmen
+
+das programm endet sobald sich der beste pfad für eine gewisse anzahl an generationen nicht geändert hat die genaue anzahl lasse ich erstmal offen um zu gucken wie sich das prgramm verhält
+
+ich verusuche das erstmal umzusetzten und gucke ob ich dabei auf schwierigkeiten gerate
