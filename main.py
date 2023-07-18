@@ -7,7 +7,7 @@ import time
 
 #pointsAmount = int( input("the amount of points:"))
 SPREAD_MAX = 10 
-pointsAmount = 100
+pointsAmount = 9
 #spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
 #spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
 spread = 7
@@ -78,7 +78,9 @@ class Agent:
         while True:
             for con in weights:
                 if random.random() < 1/pointsAmount*weights[2]:
-
+                    self.curPoint = weights[0]
+                    self.pathLength += weights[1]
+                    self.path.append[self.curPoint]
                     return
         
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
