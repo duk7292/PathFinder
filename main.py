@@ -7,7 +7,7 @@ import time
 
 #pointsAmount = int( input("the amount of points:"))
 SPREAD_MAX = 10 
-pointsAmount = 200
+pointsAmount = 100
 #spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
 #spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
 spread = 7
@@ -28,6 +28,16 @@ root.resizable(False, False)
 
 canvas = tk.Canvas(root, width=canvasWidth, height=CanvasHeight)
 canvas.pack()
+#functions 
+
+def quickSortPointDistance(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2][1]
+    left = [x for x in arr if x[1] < pivot]
+    middle = [x for x in arr if x[1] == pivot]
+    right = [x for x in arr if x[1] > pivot]
+    return quickSortPointDistance(right) + middle + quickSortPointDistance(left)
 
 class Point:
     def __init__(self,x,y) -> None:
@@ -35,7 +45,7 @@ class Point:
         self.y = y
         self.radius = 1
         self.color = "black"
-        self.weightList = []
+        self.sortedPointDistanceList = []
     def getCordinates(self):
         return self.x , self.y
     def draw(self):
@@ -44,7 +54,9 @@ class Point:
         x2 = self.x + self.radius
         y2 = self.y + self.radius
         canvas.create_oval(x1,y1,x2,y2,fill = self.color)
-    def calculateWeights(self,pointsList):
+
+    def calculateSortedPointList(self,pointsList):
+        pointDistanceList = []
         for point in pointsList:
             if point == self:
                 return
@@ -52,18 +64,23 @@ class Point:
             distanceX = self.x -pointX 
             distanceY = self.y -pointY
             distance = math.sqrt(distanceX**2 + distanceY**2)
-            weight = (MAX_DISTANCE - distance) / MAX_DISTANCE * 1000
-            self.weightList.append([point,weight ])
-    def getWeights(self):
-        return self.weightList
+            pointDistanceList.append([point,distance,1])
+            self.sortedPointDistanceList = quickSortPointDistance(pointDistanceList)
+    def getSortedDistancePointList(self):
+        return self.sortedPointDistanceList
 class Agent:
     def __init__(self,startPoint) -> None:
         self.curPoint = startPoint
         self.path = [startPoint]
         self.pathLength = 0
     def move(self):
-        weights = self.curPoint.getWeights()
-        print()
+        weights = self.curPoint.getSortedDistancePointList()
+        while True:
+            for con in weights:
+                if random.random() < 1/pointsAmount*weights[2]:
+
+                    return
+        
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
 
 #fill the point list randomly with the parameters spread and pointsAmount
@@ -80,7 +97,7 @@ for newPoint in range(pointsAmount-1):
     pointsList.append(Point(newX,newY))
 
 for point in pointsList:
-    point.calculateWeights(pointsList)
+    point.calculateSortedPointList(pointsList)
     point.draw()
 
 def update():
