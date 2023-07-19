@@ -8,11 +8,17 @@ pointsAmount = 5
 antsAmount = 1
 #spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
 #spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
-spread = 7
+spread = 10
 
+PROBABILITY_CONSTANT = 3
+
+rate = 0.1
+target = 1+(1-(PROBABILITY_CONSTANT))
 
 canvasWidth = 1000
 CanvasHeight = 750
+
+
 
 
 root = tk.Tk()
@@ -46,13 +52,23 @@ def nextPointCalc(path,curPoint,startPoint):
         openPointsDistance.append([point,math.sqrt((curX-x)**2+(curY-y)**2)])
     openPointsDistanceSorted = quicksort(openPointsDistance)
     
+
     
-    if(len(path) == pointsAmount):
+    if(len(path) == pointsAmount or len(path) == 0):
         x,y = startPoint.getCoordinates()
         startPointDistance = (math.sqrt((curX-x)**2+(curY-y)**2))
         nextPoint,nextPointDistance = startPoint,startPointDistance
     else:
-        nextPoint,nextPointDistance = openPointsDistanceSorted[0][0], openPointsDistanceSorted[0][1]
+        found = False
+        while not found:
+            for i,point in enumerate(openPointsDistanceSorted):
+                if(random.random()<1/(pointsAmount/PROBABILITY_CONSTANT)):
+                    nextPoint,nextPointDistance = openPointsDistanceSorted[i][0], openPointsDistanceSorted[i][1]
+                    found = True
+                    break
+                    
+            
+        
     
     return  nextPoint,nextPointDistance
         
@@ -64,6 +80,8 @@ class Point:
         self.color = "black"
     def getCoordinates(self):
         return self.x , self.y
+    def setColor(self,color):
+        self.color = color
     def draw(self):
         x1 = self.x - self.radius
         y1 = self.y - self.radius
@@ -135,7 +153,8 @@ def update():
             for ant in antsList:
                 ant.killPath()
                 ant.move()
-        
+    for point in pointsList:
+        point.draw()    
     
     root.after(10000// 5,update)
     
