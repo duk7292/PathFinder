@@ -16,15 +16,14 @@ CanvasHeight = 750
 
 root = tk.Tk()
 
-root.geometry("1200x750")
+root.geometry("1000x750")
 root.resizable(False, False)
 
 
-text_widget = tk.Text(root)
-text_widget.place(x = 0,y=0,height=750,width=200)
+
 
 canvas = tk.Canvas(root, width=canvasWidth, height=CanvasHeight)
-canvas.place(x=200)
+canvas.place(x=0)
 def nextPointCalc(path,curPoint):
     def quicksort(arr):
         if len(arr) <= 1:
@@ -45,7 +44,7 @@ def nextPointCalc(path,curPoint):
         x,y = point.getCoordinates()
         openPointsDistance.append([point,math.sqrt((curX-x)**2+(curY-y)**2)])
     openPointsDistanceSorted = quicksort(openPointsDistance)
-    return openPointsDistanceSorted[0][0]
+    return openPointsDistanceSorted[0][0] , openPointsDistanceSorted[0][1]
         
 class Point:
     def __init__(self,x,y) -> None:
@@ -71,6 +70,8 @@ class Ant:
         self.color = "red"
         self.offsetToPoint = 5
         self.path = []
+        self.pathLength = 0
+        
     def draw(self):
         canvas.delete("Ant")
         x1 = self.currentPoint.getCoordinates()[0]+self.offsetToPoint - self.radius
@@ -79,9 +80,15 @@ class Ant:
         y2 = self.currentPoint.getCoordinates()[1] + self.radius
         canvas.create_oval(x1,y1,x2,y2,fill = self.color,tags="Ant")
     def move(self):
-        
-        self.currentPoint = nextPointCalc(self.path,self.currentPoint)
+        nextPoint , nextPointDistance = nextPointCalc(self.path,self.currentPoint)
+        self.currentPoint = nextPoint
+        self.pathLength += nextPointDistance
         self.path.append(self.currentPoint)
+    def killPath(self):
+        self.path = []
+        self.pathLength = 0
+    def getPathInfo(self):
+        return self.path , self.pathLength
 
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
 
@@ -107,7 +114,8 @@ for point in pointsList:
 def update():
     ant.move()
     ant.draw()
-    print(len(ant.path))
+    if(len(ant.getPathInfo()[0])==pointsAmount):
+        ant.killPath()
     root.after(10000// 250,update)
     
 update()
