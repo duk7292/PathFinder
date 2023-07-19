@@ -4,7 +4,8 @@ import math
 
 #pointsAmount = int( input("the amount of points:"))
 SPREAD_MAX = 10 
-pointsAmount = 100
+pointsAmount = 5
+antsAmount = 1
 #spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
 #spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
 spread = 7
@@ -24,7 +25,7 @@ root.resizable(False, False)
 
 canvas = tk.Canvas(root, width=canvasWidth, height=CanvasHeight)
 canvas.place(x=0)
-def nextPointCalc(path,curPoint):
+def nextPointCalc(path,curPoint,startPoint):
     def quicksort(arr):
         if len(arr) <= 1:
             return arr
@@ -44,7 +45,16 @@ def nextPointCalc(path,curPoint):
         x,y = point.getCoordinates()
         openPointsDistance.append([point,math.sqrt((curX-x)**2+(curY-y)**2)])
     openPointsDistanceSorted = quicksort(openPointsDistance)
-    return openPointsDistanceSorted[0][0] , openPointsDistanceSorted[0][1]
+    
+    
+    if(len(path) == pointsAmount):
+        x,y = startPoint.getCoordinates()
+        startPointDistance = (math.sqrt((curX-x)**2+(curY-y)**2))
+        nextPoint,nextPointDistance = startPoint,startPointDistance
+    else:
+        nextPoint,nextPointDistance = openPointsDistanceSorted[0][0], openPointsDistanceSorted[0][1]
+    
+    return  nextPoint,nextPointDistance
         
 class Point:
     def __init__(self,x,y) -> None:
@@ -63,7 +73,7 @@ class Point:
 
 
 class Ant:
-    def __init__(self,startPoint) -> None:
+    def __init__(self,startPoint,id) -> None:
         self.startPoint = startPoint
         self.currentPoint = startPoint
         self.radius = 5
@@ -71,16 +81,17 @@ class Ant:
         self.offsetToPoint = 5
         self.path = []
         self.pathLength = 0
+        self.id = id
         
     def draw(self):
-        canvas.delete("Ant")
+        canvas.delete("Ant{}".format(self.id))
         x1 = self.currentPoint.getCoordinates()[0]+self.offsetToPoint - self.radius
         y1 = self.currentPoint.getCoordinates()[1] - self.radius
         x2 = self.currentPoint.getCoordinates()[0]+self.offsetToPoint + self.radius
         y2 = self.currentPoint.getCoordinates()[1] + self.radius
-        canvas.create_oval(x1,y1,x2,y2,fill = self.color,tags="Ant")
+        canvas.create_oval(x1,y1,x2,y2,fill = self.color,tags="Ant{}".format(self.id))
     def move(self):
-        nextPoint , nextPointDistance = nextPointCalc(self.path,self.currentPoint)
+        nextPoint , nextPointDistance = nextPointCalc(self.path,self.currentPoint,self.startPoint)
         self.currentPoint = nextPoint
         self.pathLength += nextPointDistance
         self.path.append(self.currentPoint)
@@ -89,6 +100,8 @@ class Ant:
         self.pathLength = 0
     def getPathInfo(self):
         return self.path , self.pathLength
+    def getCurrentPoint(self):
+        return self.currentPoint
 
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
 
@@ -105,18 +118,26 @@ for newPoint in range(pointsAmount-1):
     newY = random.randint(startY-ySpaceSize,startY+ySpaceSize)
     pointsList.append(Point(newX,newY))
 
-ant = Ant(pointsList[0])
-ant.draw()
+antsList = []
+for newAnt in range(antsAmount):
+    antsList.append(Ant(pointsList[random.randint(0,pointsAmount-1)],newAnt))
+
 for point in pointsList:
     point.draw()
-    
+  
     
 def update():
-    ant.move()
-    ant.draw()
-    if(len(ant.getPathInfo()[0])==pointsAmount):
-        ant.killPath()
-    root.after(10000// 250,update)
+    
+    for ant in antsList:
+        ant.move()
+        ant.draw()
+    if(len(antsList[0].getPathInfo()[0])==pointsAmount+1):
+            for ant in antsList:
+                ant.killPath()
+                ant.move()
+        
+    
+    root.after(10000// 5,update)
     
 update()
 
