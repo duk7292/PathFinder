@@ -2,18 +2,18 @@ import tkinter as tk
 import random
 import math
 
-#pointsAmount = int( input("the amount of points:"))
+
 SPREAD_MAX = 10 
-pointsAmount = 5
-antsAmount = 1
-#spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
-#spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
-spread = 10
+GOODNESS_CONST = 0.8
+NEAR_POWER_CONST = 8
+MAX_WEIGHT = 5
+spread_input = int(input("the strength of the spread 1-{}:".format(SPREAD_MAX)))
+spread = 1 if spread_input < 1 else 10 if spread_input > 10 else spread_input
+pointsAmount = int( input("the amount of points:"))
+antsAmount = int (input("Amount Of Ants :"))
 
-PROBABILITY_CONSTANT = 3
 
-rate = 0.1
-target = 1+(1-(PROBABILITY_CONSTANT))
+
 
 canvasWidth = 1000
 CanvasHeight = 750
@@ -31,15 +31,66 @@ root.resizable(False, False)
 
 canvas = tk.Canvas(root, width=canvasWidth, height=CanvasHeight)
 canvas.place(x=0)
+
+max_strength = 500
+
+
+def drawPath(path):
+    canvas.delete("line")
+    for i,point in enumerate(path):
+        nextPoint = path[0]
+        if i != len(path)-1:
+            nextPoint = path[i+1]
+        canvas.create_line(point.getCoordinates(),nextPoint.getCoordinates(),width = 3 ,fill="black",tags ="line")
+
+def getScoreCalculatePoint(p):
+    low = None
+    high = None
+    for ant in antsList:
+        pathLength = ant.getPathInfo()[1]
+        if(low is None or pathLength < low):
+            low = pathLength
+        if(high is None or pathLength > high):
+            high = pathLength
+    dif = high -low
+
+    return low +(dif*p)
+   
+def recalcScores():
+    scoreCalculatePoint =  getScoreCalculatePoint(GOODNESS_CONST)
+    for ant in antsList:
+        path,pathLength = ant.getPathInfo()
+        multiply = (((scoreCalculatePoint / pathLength)-1)/2)+1
+        for i,point in enumerate(path):
+            nextPoint = path[0]
+            if(i != len(path)-1):
+                nextPoint = path[i+1]
+            multiply_score(point,nextPoint,multiply)
+
+
+def multiply_score(main_point, sub_point, multiplier):
+    global pointScorecard
+    for item in pointScorecard:
+        if item[0] == main_point:
+            for sub_item in item[1]:
+                if sub_item[0] == sub_point:
+                    sub_item[1] *= multiplier
+                    
+                    return
+def find_score(main_point, sub_point):
+    for item in pointScorecard:
+        if item[0] == main_point:
+            for sub_item in item[1]:
+                if sub_item[0] == sub_point:
+                    return sub_item[1]
+    return 1
+def create_scorecard(pointsList):
+    global pointScorecard
+    pointScorecard = []
+    for point in pointsList:
+        connections = [[other_point, 1] for other_point in pointsList if other_point != point]
+        pointScorecard.append([point, connections])
 def nextPointCalc(path,curPoint,startPoint):
-    def quicksort(arr):
-        if len(arr) <= 1:
-            return arr
-        pivot = arr[len(arr) // 2][1]
-        left = [x for x in arr if x[1] < pivot]
-        middle = [x for x in arr if x[1] == pivot]
-        right = [x for x in arr if x[1] > pivot]
-        return quicksort(left) + middle + quicksort(right)
    
     curX , curY = curPoint.getCoordinates()
     pointSet = set(pointsList)
@@ -49,8 +100,13 @@ def nextPointCalc(path,curPoint,startPoint):
     openPointsDistance = []
     for point in openPoints:
         x,y = point.getCoordinates()
-        openPointsDistance.append([point,math.sqrt((curX-x)**2+(curY-y)**2)])
-    openPointsDistanceSorted = quicksort(openPointsDistance)
+
+        multiplyer =find_score(curPoint,point)
+        
+        distance = math.sqrt((curX-x)**2+(curY-y)**2)
+        score = (((math.sqrt((canvasWidth*spread/10)**2+(CanvasHeight*spread/10)**2))-distance)**NEAR_POWER_CONST)*multiplyer
+        openPointsDistance.append([point,distance,score])
+    
     
 
     
@@ -59,13 +115,19 @@ def nextPointCalc(path,curPoint,startPoint):
         startPointDistance = (math.sqrt((curX-x)**2+(curY-y)**2))
         nextPoint,nextPointDistance = startPoint,startPointDistance
     else:
-        found = False
-        while not found:
-            for i,point in enumerate(openPointsDistanceSorted):
-                if(random.random()<1/(pointsAmount/PROBABILITY_CONSTANT)):
-                    nextPoint,nextPointDistance = openPointsDistanceSorted[i][0], openPointsDistanceSorted[i][1]
-                    found = True
-                    break
+        sum = 0
+        for point in openPointsDistance:
+            sum += point[2]
+        randomScoreSum = random.random() * sum
+        currentscoreSum = 0
+        
+        for i,point in enumerate(openPointsDistance):
+            
+            currentscoreSum+=point[2]
+            if currentscoreSum >randomScoreSum:
+                
+                nextPoint,nextPointDistance =point[0], point[1]
+                break      
                     
             
         
@@ -122,6 +184,7 @@ class Ant:
         return self.currentPoint
 
 pointsList=[Point(canvasWidth/2,CanvasHeight/2)]
+pointScorecard = []
 
 #fill the point list randomly with the parameters spread and pointsAmount
 
@@ -136,27 +199,41 @@ for newPoint in range(pointsAmount-1):
     newY = random.randint(startY-ySpaceSize,startY+ySpaceSize)
     pointsList.append(Point(newX,newY))
 
+create_scorecard(pointsList)
+
 antsList = []
+
+
 for newAnt in range(antsAmount):
     antsList.append(Ant(pointsList[random.randint(0,pointsAmount-1)],newAnt))
 
 for point in pointsList:
     point.draw()
-  
+bestPath = []
+bestPathLength = None
     
 def update():
-    
+    global bestPath
+    global bestPathLength
     for ant in antsList:
         ant.move()
-        ant.draw()
+       # ant.draw()
     if(len(antsList[0].getPathInfo()[0])==pointsAmount+1):
-            for ant in antsList:
-                ant.killPath()
-                ant.move()
+        recalcScores()
+        for ant in antsList:
+            path,pathLength = ant.getPathInfo()
+            if(bestPathLength is None or pathLength<bestPathLength):
+                bestPath = path
+                bestPathLength = pathLength
+                drawPath(bestPath)
+            #draw_connections()
+            ant.killPath()
+            ant.move()
+        
     for point in pointsList:
         point.draw()    
     
-    root.after(10000// 5,update)
+    root.after(10000// 10000,update)
     
 update()
 
