@@ -1,34 +1,35 @@
--setting up the windows and the canvas 
--making the point class to safe any point and its coordinates and make it drawable
--make a List from the points with the user input points amount and spread 
--draw the List 
+Deutsch:
 
-- start with the brute Force
-- gehe durch jede möglichkeit an punkten durch und messe die länge des weges wenn es die kürzeste ist speichere sie
+Die Entwicklung des Projekts begann mit der Einrichtung einer grafischen Benutzeroberfläche, bestehend aus Fenstern und einer Zeichenfläche. Darauf folgte die Implementierung einer Klasse für Punkte, die jeden Punkt und seine Koordinaten speichert und zeichnen kann. Mit der vom Benutzer eingegebenen Anzahl und Verteilung der Punkte entstand eine Liste, die anschließend gezeichnet wurde.
 
-gedanken:
--der brute force algorithmus hat den vorteil das er einfach zu erstellen ist jedoch hat er große schwächen sobald die zahl der punkte höher wird jedoch ist sein vorteil das man bei dem ergebniss sich sicher sein kann das der weg der best mögliche ist mein nächster versuch besteht darin mir ein besitpiel an den Ameisen zu nehmen 
+Der erste Lösungsansatz für das Problem war der Brute-Force-Algorithmus. Dieser durchläuft jede mögliche Kombination von Punkten und misst die Länge des Weges. Der kürzeste Weg wird gespeichert. Trotz seiner Einfachheit und der Garantie, dass der gefundene Weg der bestmögliche ist, hat der Brute-Force-Ansatz erhebliche Schwächen, wenn die Anzahl der Punkte steigt.
 
-Ameisen Ansatz:
-Die idee kamm mir weil Ameisen bekannt für ihre feromone sind und ich glaube das 
-man das auch hierauf anwenden kann
+Daher kam der Gedanke auf, den Ansatz der Ameisen zu verfolgen. Ameisen sind bekannt für ihre Verwendung von Pheromonen, und es scheint, dass dieser Ansatz auch auf dieses Projekt anwendbar ist. Der erste Gedanke war, mehrere Ameisen vom Startpunkt aus loszuschicken. Jede Ameise geht zu einem zufälligen Punkt, wobei die Wahrscheinlichkeit, dass sie zu einem bestimmten Punkt geht, umso größer ist, je näher der Punkt ist. Das Ziel jeder Ameise ist es, jeden Punkt zu besuchen und zum Startpunkt zurückzukehren. Je kürzer der Weg der Ameise ist, desto stärker ist die Pheromonspur, die sie hinterlässt. Eine neue Generation von Ameisen folgt, und die Pheromonspur beeinflusst die Wahrscheinlichkeit, dass sie eine bestimmte Verbindung wählen.
 
-mein erster gedanke besteht darin mehere Ameisen vom Startpunkt loszuschicken jede Ameise geht an einen zufälligen punkt wobei um so näher ein punkt ist desto warscheinlicher ist es das die Ameise dahin geht 
-das ziel der Ameise besteht darin jeden punkt zu besuchen und am startpunkt wieder zurückzukommen die um so kürzer der weg der Ameise war desto stärker ihre Feromonspur dann kommt eine neue generation die Feromonspur hat dann ein einfluss auf die wahrscheinlichkeit einer verbindung 
+Nach einiger Überlegung entstand ein erster Plan für das Programm: Die Erstellung einer neuen Klasse namens "Agent", die eine Ameise repräsentiert. Diese Klasse speichert, auf welchem Punkt sich die Ameise gerade befindet und welche Punkte sie bereits besucht hat, in der Reihenfolge, in der sie die Punkte besucht hat. So lässt sich der Weg, den sie gegangen ist, direkt nachvollziehen. Die Ameise hat auch eine "move"-Funktion, die die Gewichte der Punkte nimmt und zufällig entscheidet, zu welchem Punkt sie als nächstes geht.
 
-nach etwas überlegung habe ich mir jetzt einen ersten Plan für das Programm ausgedacht:
+Die Gewichte sind im Punkt gespeichert, jeder Punkt merkt sich das Gewicht zu allen anderen Punkten. Falls das zu rechenintensiv ist, muss später eine Optimierung gefunden werden. Die Gewichte starten mit Werten von 0 - 1000, wobei 1000 bedeutet, dass der nächste Punkt auf dem aktuellen Punkt liegt, und 0 bedeutet, dass dieser weit weg ist. Dabei wird einfach die maximal mögliche Entfernung zweier Punkte minus die Entfernung plus 1 gerechnet, um den Wert 0 zu verhindern. Dieser Wert wird dann auf 0 - 1000 projiziert. Nach jeder Generation werden die Gewichte erhöht, je nachdem, wie kurz der gesamte Weg der Agenten war, die diese Verbindung genommen haben.
 
-ich erstelle eine neue Klasse Agent welche eine Ameise Darstellen soll diese hat folgende eigenschaften die Klasse speichert
-auf welchem Punkt sie sich momentan befindet und auf welchen punkten sie bereits war in der reinfolge in der sie auf den punkten war
-daduch mekre ich mir direkt den weg den sie gegangen ist
-dann hat sie eine move funktion diese nimmt die gewichte des points und entscheidet zufällig auf welchen sie geht
+Die Umsetzung dieses Plans war der nächste Schritt. Es wurde erwartet, dass dabei auf Schwierigkeiten gestoßen wird, die gelöst werden müssen.
 
-die gewichte sind im punkt gespeichert jeder punkt merkt sich das gewicht zu alen anderen punkten falls das zu rechen aufwedig 
-ist muss ich dabei später eine optimierung finden aber fürs erste lasse ich das
-die gewichte starten mit werten von 0 - 1000 wobei 1000 hieße das der nächste punkt auf dem jetzigem ist
-und 0 würde heißen das dieser weit weg wäre dabei rechne ich einfach maximal mögliche etfernung zweier punkte minus die entfernung plus 1 um den wert 0 zu verhindern diesen wert projeziere ich dann zu 0 -1000 dann  nach jeder 
-Generation werden die Gewichte erhöht und zwar jenachdem wie kurz der insgesamte weg der agenten war die siese verbindung nahmen
+Nach einiger Zeit und Überlegung wurde das Gewichtungssystem verfeinert. Es wurde beibehalten, dass die Punkte mit der weitesten Entfernung den geringsten Score haben. Der dort vorliegende Score wird dann mit einer Konstante potenziert, um nähere Punkte zu stärken. Daraufhin wird dann mit der Pheromonstärke multipliziert.
 
-das programm endet sobald sich der beste pfad für eine gewisse anzahl an generationen nicht geändert hat die genaue anzahl lasse ich erstmal offen um zu gucken wie sich das prgramm verhält
+Zum Abschluss des Projekts wurde der Code noch einmal gründlich überarbeitet und besser kommentiert. Obwohl es definitiv noch Verbesserungsmöglichkeiten gibt, wird nun der Fokus auf andere Projekte gelegt.
 
-ich verusuche das erstmal umzusetzten und gucke ob ich dabei auf schwierigkeiten gerate
+English:
+
+The development of the project began with the setup of a graphical user interface, consisting of windows and a drawing area. This was followed by the implementation of a class for points, which stores each point and its coordinates and can draw it. Based on the number and distribution of points entered by the user, a list was created and then drawn.
+
+The first approach to solving the problem was the brute force algorithm. This algorithm goes through every possible combination of points and measures the length of the path. The shortest path is saved. Despite its simplicity and the guarantee that the found path is the best possible one, the brute force approach has significant weaknesses when the number of points increases.
+
+Therefore, the idea came up to follow the approach of the ants. Ants are known for their use of pheromones, and it seems that this approach can also be applied to this project. The first thought was to send several ants from the starting point. Each ant goes to a random point, with the probability of going to a certain point being greater the closer the point is. The goal of each ant is to visit every point and return to the starting point. The shorter the path of the ant, the stronger the pheromone trail it leaves behind. A new generation of ants follows, and the pheromone trail influences the probability of them choosing a certain connection.
+
+After some consideration, a first plan for the program emerged: The creation of a new class called "Agent", which represents an ant. This class stores which point the ant is currently on and which points it has already visited, in the order in which it visited the points. This allows the path it has taken to be traced directly. The ant also has a "move" function that takes the weights of the points and randomly decides which point to go to next.
+
+The weights are stored in the point, each point remembers the weight to all other points. If this is too computationally intensive, an optimization will have to be found later. The weights start with values from 0 - 1000, where 1000 means that the next point is on the current point, and 0 means that it is far away. The maximum possible distance between two points minus the distance plus 1 is simply calculated to prevent the value 0. This value is then projected to 0 - 1000. After each generation, the weights are increased depending on how short the total path of the agents was that took this connection.
+
+The implementation of this plan is the next step. It is expected that difficulties will be encountered that need to be solved.
+
+After some time and consideration, the weighting system was refined. It was maintained that the points with the furthest distance have the lowest score. The score there is then raised to a constant to strengthen closer points. It is then multiplied by the pheromone strength.
+
+At the end of the project, the code was thoroughly revised and better commented. Although there are definitely still opportunities for improvement, the focus is now being shifted to other projects.
